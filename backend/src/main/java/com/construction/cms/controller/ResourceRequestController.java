@@ -30,19 +30,19 @@ public class ResourceRequestController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('DIRECTOR') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('ADMIN')")
     public List<ResourceRequest> getAllRequests() {
         return requestService.getAllRequests();
     }
     
     @GetMapping("/project/{projectId}")
-    @PreAuthorize("hasRole('DIRECTOR') or hasRole('ENGINEER')")
+    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('ENGINEER')")
     public List<ResourceRequest> getRequestsByProject(@PathVariable Long projectId) {
         return requestService.getRequestsByProject(projectId);
     }
 
     @PutMapping("/{id}/status")
-    @PreAuthorize("hasRole('DIRECTOR')")
+    @PreAuthorize("hasRole('PROJECT_MANAGER')")
     public ResponseEntity<?> updateStatus(@PathVariable Long id, @RequestParam RequestStatus status) {
         try {
             return ResponseEntity.ok(requestService.updateStatus(id, status));

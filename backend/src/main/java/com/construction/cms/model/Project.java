@@ -1,5 +1,6 @@
 package com.construction.cms.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
@@ -54,6 +55,11 @@ public class Project {
         inverseJoinColumns = @JoinColumn(name = "machine_id")
     )
     private List<Machine> assignedMachines;
+
+    // Progress Tracking
+    private Double progressPercentage = 0.0;
+    private String currentPhase; // e.g., "Foundation", "Structure", "Finishing"
+    private LocalDate lastProgressUpdate;
 
     public Project() {}
 
@@ -125,6 +131,7 @@ public class Project {
         this.status = status;
     }
 
+    @JsonIgnore
     public User getDirector() {
         return director;
     }
@@ -133,6 +140,7 @@ public class Project {
         this.director = director;
     }
 
+    @JsonIgnore
     public User getEngineer() {
         return engineer;
     }
@@ -141,6 +149,7 @@ public class Project {
         this.engineer = engineer;
     }
 
+    @JsonIgnore
     public List<ProjectMaterial> getMaterials() {
         return materials;
     }
@@ -157,11 +166,44 @@ public class Project {
         this.assignedEmployees = assignedEmployees;
     }
 
+    @JsonIgnore
     public List<Machine> getAssignedMachines() {
         return assignedMachines;
     }
 
     public void setAssignedMachines(List<Machine> assignedMachines) {
         this.assignedMachines = assignedMachines;
+    }
+
+    public Double getProgressPercentage() {
+        return progressPercentage;
+    }
+
+    public void setProgressPercentage(Double progressPercentage) {
+        this.progressPercentage = progressPercentage;
+    }
+
+    public String getCurrentPhase() {
+        return currentPhase;
+    }
+
+    public void setCurrentPhase(String currentPhase) {
+        this.currentPhase = currentPhase;
+    }
+
+    public LocalDate getLastProgressUpdate() {
+        return lastProgressUpdate;
+    }
+
+    public void setLastProgressUpdate(LocalDate lastProgressUpdate) {
+        this.lastProgressUpdate = lastProgressUpdate;
+    }
+
+    // Computed method to check if project is delayed
+    public boolean isDelayed() {
+        if (endDate == null || status == ProjectStatus.COMPLETED) {
+            return false;
+        }
+        return LocalDate.now().isAfter(endDate);
     }
 }

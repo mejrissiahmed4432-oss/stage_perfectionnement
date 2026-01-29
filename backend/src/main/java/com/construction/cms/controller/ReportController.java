@@ -26,7 +26,7 @@ public class ReportController {
     private MaterialRepository materialRepository;
 
     @GetMapping("/summary")
-    @PreAuthorize("hasRole('DIRECTOR') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('ADMIN')")
     public Map<String, Object> getSummary() {
         Map<String, Object> stats = new HashMap<>();
         
@@ -54,7 +54,7 @@ public class ReportController {
     }
 
     @GetMapping("/low-stock")
-    @PreAuthorize("hasRole('DIRECTOR') or hasRole('ADMIN') or hasRole('ENGINEER')")
+    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('ADMIN') or hasRole('ENGINEER')")
     public List<Material> getLowStockMaterials() {
         // Simple threshold < 50
         return materialRepository.findAll().stream()

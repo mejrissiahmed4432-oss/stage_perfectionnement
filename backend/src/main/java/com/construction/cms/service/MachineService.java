@@ -4,6 +4,7 @@ import com.construction.cms.model.Employee;
 import com.construction.cms.model.EmployeeStatus;
 import com.construction.cms.model.Machine;
 import com.construction.cms.model.MachineStatus;
+import com.construction.cms.model.Profession;
 import com.construction.cms.repository.EmployeeRepository;
 import com.construction.cms.repository.MachineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MachineService {
@@ -60,7 +62,7 @@ public class MachineService {
         Employee driver = employeeRepository.findById(driverId)
                 .orElseThrow(() -> new RuntimeException("Driver not found"));
 
-        if (!"Driver".equalsIgnoreCase(driver.getProfession())) {
+        if (!isDriverProfession(driver.getProfession())) {
             throw new RuntimeException("Employee is not a Driver");
         }
 
@@ -81,5 +83,38 @@ public class MachineService {
         
         employeeRepository.save(driver);
         return machineRepository.save(machine);
+    }
+
+    @Transactional
+    public Machine unassignDriver(Long machineId) {
+        Machine machine = machineRepository.findById(machineId)
+                .orElseThrow(() -> new RuntimeException("Machine not found"));
+
+        Employee currentDriver = machine.getDriver();
+        if (currentDriver != null) {
+            currentDriver.setStatus(EmployeeStatus.AVAILABLE);
+            employeeRepository.save(currentDriver);
+            machine.setDriver(null);
+        }
+
+        return machineRepository.save(machine);
+    }
+
+    public List<Employee> getAvailableDrivers() {
+        // Get all available employees with any driver profession
+        List<Employee> allAvailable = employeeRepository.findByStatus(EmployeeStatus.AVAILABLE);
+        return allAvailable.stream()
+                .filter(e -> isDriverProfession(e.getProfession()))
+                .collect(Collectors.toList());
+    }
+
+    private boolean isDriverProfession(Profession profession) {
+        return profession == Profession.CAR_DRIVER ||
+               profession == Profession.SEMI_DRIVER ||
+               profession == Profession.EXCAVATOR_DRIVER ||
+               profession == Profession.LOADER_DRIVER ||
+               profession == Profession.CRANE_OPERATOR ||
+               profession == Profession.FORKLIFT_DRIVER ||
+               profession == Profession.MIXER_TRUCK_DRIVER;
     }
 }

@@ -23,5 +23,10 @@ public class DatabaseCleanup implements CommandLineRunner {
             // It might already be dropped, or name is different (unlikely given logs), or table doesn't exist yet
             System.out.println("Could not drop index (might not exist): " + e.getMessage());
         }
+        try {
+            jdbcTemplate.execute("ALTER TABLE employees MODIFY COLUMN status VARCHAR(20)");
+        } catch (Exception e) {
+            // Column might already be wide enough or table not created yet
+        }
     }
 }

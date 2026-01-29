@@ -82,4 +82,20 @@ public class ProjectService {
         project.getAssignedMachines().add(machine);
         return projectRepository.save(project);
     }
+
+    public Project updateProgress(Long projectId, Double progressPercentage, String currentPhase) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+        
+        project.setProgressPercentage(progressPercentage);
+        project.setCurrentPhase(currentPhase);
+        project.setLastProgressUpdate(java.time.LocalDate.now());
+        
+        return projectRepository.save(project);
+    }
+
+    public Project getProjectById(Long projectId) {
+        return projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+    }
 }

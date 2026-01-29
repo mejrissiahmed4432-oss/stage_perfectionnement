@@ -11,4 +11,6 @@ import java.util.List;
 public interface ResourceRequestRepository extends JpaRepository<ResourceRequest, Long> {
     List<ResourceRequest> findByProjectId(Long projectId);
     List<ResourceRequest> findByStatus(RequestStatus status);
+    List<ResourceRequest> findByProjectIdAndStatus(Long projectId, RequestStatus status);
+    List<ResourceRequest> findByEngineerId(Long engineerId);
 }

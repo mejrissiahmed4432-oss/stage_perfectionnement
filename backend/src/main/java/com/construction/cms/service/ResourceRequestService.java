@@ -88,12 +88,20 @@ public class ResourceRequestService {
         } else if (request.getType() == RequestType.EMPLOYEE) {
             // "Need 2 Builders"
             int count = request.getCount();
-            String profession = request.getResourceName(); // "Builder"
-            
+            String professionName = request.getResourceName(); // e.g. "BUILDER" or "CAR_DRIVER"
+            if (professionName == null || professionName.isBlank()) {
+                throw new RuntimeException("Profession is required for employee request");
+            }
+            Profession profession;
+            try {
+                profession = Profession.valueOf(professionName.trim().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Invalid profession: " + professionName);
+            }
             List<Employee> available = employeeRepository.findByProfessionAndStatus(profession, EmployeeStatus.AVAILABLE);
             
             if (available.size() < count) {
-                throw new RuntimeException("Not enough available employees with profession: " + profession);
+                throw new RuntimeException("Not enough available employees with profession: " + professionName);
             }
             
             for (int i = 0; i < count; i++) {

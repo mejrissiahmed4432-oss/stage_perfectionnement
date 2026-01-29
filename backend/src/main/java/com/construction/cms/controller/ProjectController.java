@@ -21,7 +21,7 @@ public class ProjectController {
     private ProjectService projectService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('DIRECTOR') or hasRole('ENGINEER')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PROJECT_MANAGER') or hasRole('ENGINEER')")
     public List<Project> getAllProjects() {
         return projectService.getAllProjects();
     }
@@ -35,7 +35,7 @@ public class ProjectController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('DIRECTOR')")
+    @PreAuthorize("hasRole('PROJECT_MANAGER')")
     public Project createProject(@RequestBody Project project) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
@@ -43,20 +43,34 @@ public class ProjectController {
     }
 
     @PutMapping("/{id}/assign-engineer/{engineerId}")
-    @PreAuthorize("hasRole('DIRECTOR')")
+    @PreAuthorize("hasRole('PROJECT_MANAGER')")
     public Project assignEngineer(@PathVariable Long id, @PathVariable Long engineerId) {
         return projectService.assignEngineer(id, engineerId);
     }
 
     @PutMapping("/{id}/add-employee/{employeeId}")
-    @PreAuthorize("hasRole('DIRECTOR')")
+    @PreAuthorize("hasRole('PROJECT_MANAGER')")
     public Project addEmployee(@PathVariable Long id, @PathVariable Long employeeId) {
         return projectService.addEmployee(id, employeeId);
     }
 
     @PutMapping("/{id}/add-machine/{machineId}")
-    @PreAuthorize("hasRole('DIRECTOR')")
+    @PreAuthorize("hasRole('PROJECT_MANAGER')")
     public Project addMachine(@PathVariable Long id, @PathVariable Long machineId) {
         return projectService.addMachine(id, machineId);
+    }
+
+    @PutMapping("/{id}/progress")
+    @PreAuthorize("hasRole('ENGINEER') or hasRole('PROJECT_MANAGER')")
+    public ResponseEntity<?> updateProgress(@PathVariable Long id, @RequestBody com.construction.cms.payload.request.ProgressUpdateRequest request) {
+        Project project = projectService.updateProgress(id, request.getProgressPercentage(), request.getCurrentPhase());
+        return ResponseEntity.ok(project);
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PROJECT_MANAGER') or hasRole('ENGINEER')")
+    public ResponseEntity<?> getProjectById(@PathVariable Long id) {
+        Project project = projectService.getProjectById(id);
+        return ResponseEntity.ok(project);
     }
 }

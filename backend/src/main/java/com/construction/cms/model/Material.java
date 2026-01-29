@@ -14,18 +14,18 @@ public class Material {
 
     private String description;
 
-    @Column(nullable = false)
-    private Double stockQuantity;
-
-    private String unit; // e.g., kg, bags, liters
+    // Stock Management - using currentStock as the main field
+    private Double currentStock = 0.0;
+    private Double minStockLevel = 0.0;
+    private String unit; // e.g., "kg", "m3", "pieces", "bags", "liters"
 
     public Material() {}
 
-    public Material(Long id, String name, String description, Double stockQuantity, String unit) {
+    public Material(Long id, String name, String description, Double currentStock, String unit) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.stockQuantity = stockQuantity;
+        this.currentStock = currentStock;
         this.unit = unit;
     }
 
@@ -53,12 +53,20 @@ public class Material {
         this.description = description;
     }
 
-    public Double getStockQuantity() {
-        return stockQuantity;
+    public Double getCurrentStock() {
+        return currentStock;
     }
 
-    public void setStockQuantity(Double stockQuantity) {
-        this.stockQuantity = stockQuantity;
+    public void setCurrentStock(Double currentStock) {
+        this.currentStock = currentStock;
+    }
+
+    public Double getMinStockLevel() {
+        return minStockLevel;
+    }
+
+    public void setMinStockLevel(Double minStockLevel) {
+        this.minStockLevel = minStockLevel;
     }
 
     public String getUnit() {
@@ -67,5 +75,19 @@ public class Material {
 
     public void setUnit(String unit) {
         this.unit = unit;
+    }
+
+    // Backward compatibility - map to currentStock
+    public Double getStockQuantity() {
+        return currentStock;
+    }
+
+    public void setStockQuantity(Double stockQuantity) {
+        this.currentStock = stockQuantity;
+    }
+
+    // Computed method to check if stock is low
+    public boolean isLowStock() {
+        return currentStock != null && minStockLevel != null && currentStock <= minStockLevel;
     }
 }

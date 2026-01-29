@@ -3,5 +3,6 @@ package com.construction.cms.model;
 public enum EmployeeStatus {
     AVAILABLE,
     ASSIGNED,
-    UNAVAILABLE
+    UNAVAILABLE,
+    CONTRACT_END
 }

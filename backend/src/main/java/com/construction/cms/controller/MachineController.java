@@ -18,13 +18,13 @@ public class MachineController {
     private MachineService machineService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('DIRECTOR')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PROJECT_MANAGER')")
     public List<Machine> getAllMachines() {
         return machineService.getAllMachines();
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('DIRECTOR')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PROJECT_MANAGER')")
     public ResponseEntity<Machine> getMachineById(@PathVariable Long id) {
         return machineService.getMachineById(id)
                 .map(ResponseEntity::ok)
@@ -38,12 +38,25 @@ public class MachineController {
     }
 
     @PutMapping("/{id}/assign-driver/{driverId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('DIRECTOR')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PROJECT_MANAGER')")
     public ResponseEntity<?> assignDriver(@PathVariable Long id, @PathVariable Long driverId) {
         try {
             return ResponseEntity.ok(machineService.assignDriver(id, driverId));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @PutMapping("/{id}/unassign-driver")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PROJECT_MANAGER')")
+    public ResponseEntity<?> unassignDriver(@PathVariable Long id) {
+        Machine machine = machineService.unassignDriver(id);
+        return ResponseEntity.ok(machine);
+    }
+
+    @GetMapping("/available-drivers")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PROJECT_MANAGER')")
+    public ResponseEntity<?> getAvailableDrivers() {
+        return ResponseEntity.ok(machineService.getAvailableDrivers());
     }
 }
